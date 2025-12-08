@@ -1,3 +1,4 @@
+# 3 двигающиеся цели + ложная цель
 import math
 from random import choice, randint as rnd 
  
@@ -34,7 +35,7 @@ class Ball:
         self.vx = 0
         self.vy = 0
         self.color = choice(GAME_COLORS)
-        self.live = 30
+        self.live = 1
         self.grav = 0.5 #  гравитация
 
     def move(self):
@@ -153,10 +154,6 @@ class Gun:
             self.color = GREY
  
 class Target:
-    # self.points = 0
-    # self.live = 1
-    # FIXME: don't work!!! How to call this functions when object is created?
-    # self.new_target()
     
     def __init__(self):
         # инициализация
@@ -211,7 +208,7 @@ class Target:
         self.points += points
 
     def draw(self):
-        # FIXME - рисуется цель
+        #  рисуется цель
         if self.live:
             pygame.draw.circle(self.screen, self.color,(self.x, self.y),self.r)
 class FalseTarget:
@@ -271,6 +268,7 @@ class FalseTarget:
         #  рисуется цель
         if self.live:
             pygame.draw.circle(self.screen, self.color,(self.x, self.y),self.r)
+
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
@@ -282,9 +280,14 @@ clock = pygame.time.Clock()
 gun = Gun(screen)
 # Создаем несколько движущихся мишеней
 targets = []
+falsetargets=[]
 for i in range(3): # Создаем 3 мишени
     target = Target()
     targets.append(target)
+for i in range(1): #Создаем 2 ложные мишени
+    falsetarget = FalseTarget()
+    falsetargets.append(falsetarget)
+
 finished = False
 
 while not finished:
@@ -294,7 +297,11 @@ while not finished:
     for target in targets:
         target.move()
         target.draw()
-    
+
+    for falsetarget in falsetargets:
+        falsetarget.move()
+        falsetarget.draw()
+
     for b in balls:
         b.draw()
     
@@ -315,64 +322,31 @@ while not finished:
             gun.targetting(event)
  
 
-    for b in balls:
-        b.move()
-        b.live-=1
+    for ball in balls:
+        ball.move()
+        ball.live -= 1
         # Проверяем столкновение с мишенями
         for target in targets:
-            if b.hittest(target) and target.live:
+            if ball.hittest(target) and target.live:
                 target.live = 0
                 target.hit()
                 score += 1 # Увеличиваем счет
                 # Создаем новую мишень через короткую задержку
                 pygame.time.delay(100)
                 target.new_target()
-    gun.power_up()
-falsetargets=[]
-for i in range(2): #Создаем 2 ложные мишени
-    falsetarget = FalseTarget()
-    falsetargets.append(falsetarget)
-falsefinished = False
 
-while not falsefinished:
-    screen.fill(WHITE)
-    gun.draw()
-    # Двигаем и рисуем все мишени
-    for falsetarget in falsetargets:
-        falsetarget.move()
-        falsetarget.draw()
-    
-    for b in balls:
-        b.draw()
-    
-    # Отображаем счет
-    score_text = font.render(f"Score: {score}", True, BLACK)
-    screen.blit(score_text, (10, 10))
-    pygame.display.update()
-
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            gun.fire2_start(event)
-        elif event.type == pygame.MOUSEBUTTONUP:
-            gun.fire2_end(event)
-        elif event.type == pygame.MOUSEMOTION:
-            gun.targetting(event)
- 
-
-    for b in balls:
-        b.move()
-        b.live-=1
-        # Проверяем столкновение с мишенями
         for falsetarget in falsetargets:
-            if b.hittest(falsetarget) and falsetarget.live:
+            if ball.hittest(falsetarget) and falsetarget.live:
                 falsetarget.live = 0
                 falsetarget.hit()
                 score -= 2 #уменьшаем счет счет
                 # Создаем новую мишень через короткую задержку
-                pygame.time.delay(50)
+                pygame.time.delay(100)
                 falsetarget.new_falsetarget()
+    
+
     gun.power_up()
+
+
+    
 pygame.quit()

@@ -1,4 +1,4 @@
-#упр3
+# 3 цели двигаются
 import math
 from random import choice, randint as rnd 
  

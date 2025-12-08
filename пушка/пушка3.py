@@ -1,4 +1,4 @@
-#упр2 2 цели
+# 2 цели не двигаются
 import math
 from random import choice, randint as rnd 
  
